@@ -1,13 +1,9 @@
 direction: down
-layout-engine: elk
-theme-id: 0
-sketch: false
-vars: {
-  font: sans
-}
+grid-columns: 1
+grid-gap: 16
 
 # ========================================================
-# PALETA PASTEL SEMÁNTICA OFICIAL (DIMENSIONES FIJAS 235x120)
+# PALETA PASTEL SEMÁNTICA OFICIAL (BORDER-RADIUS: 10)
 # ========================================================
 classes: {
   mint: {
@@ -15,55 +11,45 @@ classes: {
       fill: "#EBF7EE"
       stroke: "#43A047"
       font-color: "#1B5E20"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
   sky: {
     style: {
       fill: "#E8F1FA"
       stroke: "#4A89DC"
       font-color: "#1A237E"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
   lavender: {
     style: {
       fill: "#EFEBF9"
       stroke: "#7E57C2"
       font-color: "#311B92"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
   amber: {
     style: {
       fill: "#FDF3E7"
       stroke: "#E68A00"
       font-color: "#4E342E"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
   rose: {
     style: {
       fill: "#FCECEF"
       stroke: "#D85C72"
       font-color: "#4A151B"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
 }
 
@@ -71,19 +57,21 @@ classes: {
 # CAPA 1: PERÍMETRO DE RED & INGRESS TLS 1.3
 # ========================================================
 layer_1_perimeter: "Capa 1: Perímetro de Red & Ingress TLS 1.3" {
+  width: 820
   style: {
     fill: "#FAFAFA"
     stroke: "#BDBDBD"
     stroke-width: 1
-    border-radius: 12
+    border-radius: 10
   }
   edge_perimeter: {
     class: mint
+    width: 400
     label: |||md
-      **edge_perimeter_guard**
-      HAProxy:2.9 + Fail2Ban
-      Port: 443 / TLS 1.3
-      DDoS Mitigation | ssl_certs
+      ### edge_perimeter_guard
+      **HAProxy 2.9 + Fail2Ban**
+      · Port 443 · TLS 1.3 Estricto
+      · DDoS Mitigation · ssl_certs
     |||
   }
 }
@@ -92,19 +80,21 @@ layer_1_perimeter: "Capa 1: Perímetro de Red & Ingress TLS 1.3" {
 # CAPA 2: INSPECCIÓN WAF & CABECERAS HTTP
 # ========================================================
 layer_2_waf: "Capa 2: Inspección WAF & Cabeceras HTTP" {
+  width: 820
   style: {
     fill: "#FAFAFA"
     stroke: "#BDBDBD"
     stroke-width: 1
-    border-radius: 12
+    border-radius: 10
   }
   waf_modsec: {
     class: mint
+    width: 400
     label: |||md
-      **waf_modsecurity**
-      Nginx:1.27 + ModSec v3
-      Port: 8080 / HTTP Inter
-      OWASP CRS v4 | crs_rules
+      ### waf_modsecurity
+      **Nginx 1.27 + ModSec v3**
+      · Port 8080 · HTTP Interno
+      · OWASP CRS v4 · crs_rules
     |||
   }
 }
@@ -113,31 +103,35 @@ layer_2_waf: "Capa 2: Inspección WAF & Cabeceras HTTP" {
 # CAPA 3: IDENTIDAD & CONTROL DE ACCESO IAM / RBAC
 # ========================================================
 layer_3_iam: "Capa 3: Identidad & Control de Acceso IAM / RBAC" {
+  width: 820
   style: {
     fill: "#FAFAFA"
     stroke: "#BDBDBD"
     stroke-width: 1
-    border-radius: 12
+    border-radius: 10
   }
   grid-columns: 2
+  grid-gap: 20
 
   iam_keycloak: {
     class: amber
+    width: 400
     label: |||md
-      **iam_keycloak**
-      Keycloak:25-quarkus
-      Port: 8443 / HTTPS
-      OIDC & JWT 15m | sso_data
+      ### iam_keycloak
+      **Keycloak 25 Quarkus**
+      · Port 8443 · HTTPS
+      · OIDC & JWT 15m · sso_data
     |||
   }
 
   opa_enforcer: {
     class: amber
+    width: 400
     label: |||md
-      **opa_enforcer**
-      OPA:0.67 Rego Engine
-      Port: 8181 / REST
-      RBAC Validation | opa_rules
+      ### opa_enforcer
+      **OPA 0.67 Rego Engine**
+      · Port 8181 · REST
+      · RBAC Fine-Grained · opa_rules
     |||
   }
 }
@@ -146,52 +140,58 @@ layer_3_iam: "Capa 3: Identidad & Control de Acceso IAM / RBAC" {
 # CAPA 4: HARDENING & JAILING DE CONTENEDORES
 # ========================================================
 layer_4_jailing: "Capa 4: Hardening & Jailing de Contenedores" {
+  width: 820
   style: {
     fill: "#FAFAFA"
     stroke: "#BDBDBD"
     stroke-width: 1
-    border-radius: 12
+    border-radius: 10
   }
   jailed_backend: {
     class: sky
+    width: 400
     label: |||md
-      **jailed_backend**
-      Python:3.12 (FastAPI)
-      Port: 8000 / HTTP Inter
-      CAP_DROP=ALL | tmpfs_ram
+      ### jailed_backend
+      **Python 3.12 FastAPI**
+      · Port 8000 · HTTP Interno
+      · CAP_DROP=ALL · tmpfs_ram
     |||
   }
 }
 
 # ========================================================
-# CAPA 5: GESTIÓN DE SECRETOS & AUDITORÍA (SPLIT 2 COLUMNAS)
+# CAPA 5: BÓVEDA DE SECRETOS & AUDITORÍA (SPLIT 2 COLUMNAS)
 # ========================================================
-layer_5_split: "Capa 5: Bóveda de Secretos & Auditoría de Cumplimiento" {
+layer_5_split: "Capa 5: Bóveda de Secretos & Auditoría Forense" {
+  width: 820
   style: {
     fill: "#FAFAFA"
     stroke: "#BDBDBD"
     stroke-width: 1
-    border-radius: 12
+    border-radius: 10
   }
   grid-columns: 2
+  grid-gap: 20
 
   vault_cluster: {
     class: rose
+    width: 400
     label: |||md
-      **vault_cluster**
-      HashiCorp-Vault:1.17
-      Port: 8200 / mTLS
-      KV v2 & Transit | vlt_data
+      ### vault_cluster
+      **HashiCorp Vault 1.17**
+      · Port 8200 · mTLS
+      · KV v2 & Transit · vlt_data
     |||
   }
 
   audit_compliance: {
     class: lavender
+    width: 400
     label: |||md
-      **audit_compliance**
-      Grafana-Loki + pgaudit
-      Port: 3100 / HTTP
-      Immutable Forensics | lki_vol
+      ### audit_compliance
+      **Grafana Loki + pgaudit**
+      · Port 3100 · HTTP
+      · Trazas Inmutables · lki_vol
     |||
   }
 }
@@ -200,19 +200,21 @@ layer_5_split: "Capa 5: Bóveda de Secretos & Auditoría de Cumplimiento" {
 # CAPA 6: PERSISTENCIA SEGURA & AISLAMIENTO RLS
 # ========================================================
 layer_6_persistence: "Capa 6: Persistencia Segura & Aislamiento RLS" {
+  width: 820
   style: {
     fill: "#FAFAFA"
     stroke: "#BDBDBD"
     stroke-width: 1
-    border-radius: 12
+    border-radius: 10
   }
   hardened_db: {
     class: mint
+    width: 400
     label: |||md
-      **hardened_db**
-      PostgreSQL:16-alpine
-      Port: 5432 / SSL
-      AES-256 + RLS | pg_data
+      ### hardened_db
+      **PostgreSQL 16 Alpine**
+      · Port 5432 · SSL verify-full
+      · AES-256 + RLS · pg_data
     |||
   }
 }
@@ -220,139 +222,127 @@ layer_6_persistence: "Capa 6: Persistencia Segura & Aislamiento RLS" {
 # ========================================================
 # FLUJO VERTICAL SECUENCIAL ENTRE CAPAS
 # ========================================================
-layer_1_perimeter.edge_perimeter -> layer_2_waf.waf_modsec: "1. TLS 1.3 Decrypt & Filter"
-layer_2_waf.waf_modsec -> layer_3_iam.iam_keycloak: "2. OIDC Token Verify"
-layer_2_waf.waf_modsec -> layer_4_jailing.jailed_backend: "3. Validated Traffic"
-layer_4_jailing.jailed_backend -> layer_3_iam.opa_enforcer: "4. Rego RBAC Check"
-layer_4_jailing.jailed_backend -> layer_5_split.vault_cluster: "5. mTLS Dynamic Secret"
-layer_4_jailing.jailed_backend -> layer_5_split.audit_compliance: "6. Async Event Stream"
-layer_4_jailing.jailed_backend -> layer_6_persistence.hardened_db: "7. SQL / SSL · Tenant RLS"
+layer_1_perimeter -> layer_2_waf: "1. TLS 1.3 Decrypt & Filter"
+layer_2_waf -> layer_3_iam: "2. OIDC Token Verify"
+layer_3_iam -> layer_4_jailing: "3. Validated Traffic Ingress"
+layer_4_jailing -> layer_5_split: "4. mTLS Dynamic Secrets & Audit"
+layer_5_split -> layer_6_persistence: "5. Ephemeral Credentials to RLS"
+layer_6_persistence -> rbac_matrix: "6. Granular Policy Enforcement"
 
 # ========================================================
-# BARRA INFERIOR: MATRIZ DE CONTROL DE ACCESO (RBAC)
+# MATRIZ RBAC (WIDTH: 854, GRID-COLUMNS: 4)
 # ========================================================
 rbac_matrix: "Matriz de Control de Acceso Granular por Roles (RBAC)" {
+  width: 854
   style: {
     fill: "#FAFAFA"
     stroke: "#BDBDBD"
     stroke-width: 1
-    border-radius: 12
+    border-radius: 10
   }
   grid-columns: 4
+  grid-gap: 18
 
   role_admin: {
     class: amber
+    width: 200
     label: |||md
-      **role_admin**
-      SysAdmin / SecOps
-      MFA + OIDC Enforced
-      Full CRUD & Logs | sec_vault
+      ### role_admin
+      **SysAdmin / SecOps**
+      · MFA + OIDC Enforced
+      · Full CRUD & Logs · sec_vault
     |||
   }
 
   role_editor: {
     class: amber
+    width: 200
     label: |||md
-      **role_docente_editor**
-      Tenant / Content Mgr
-      OIDC Scoped Token
-      Tenant CRUD Only | tnt_data
+      ### role_editor
+      **Tenant / Content Mgr**
+      · OIDC Scoped Token
+      · Tenant CRUD Only · tnt_data
     |||
   }
 
   role_user: {
     class: amber
+    width: 200
     label: |||md
-      **role_usuario_final**
-      Client / Student
-      OAuth2 JWT (15m)
-      Row-Level Query | usr_data
+      ### role_user
+      **Cliente / End User**
+      · OAuth2 JWT 15m
+      · Row-Level Query · usr_data
     |||
   }
 
   role_auditor: {
     class: lavender
+    width: 200
     label: |||md
-      **role_auditor**
-      Compliance Inspector
-      MFA Enforced Session
-      Read-Only Audit | lki_data
+      ### role_auditor
+      **Inspector Compliance**
+      · MFA Enforced Session
+      · Read-Only Audit · lki_data
     |||
   }
 }
 
 # ========================================================
-# BARRAS TRANSVERSALES INFERIORES DE ANCHO COMPLETO (1020px)
+# BARRAS TRANSVERSALES INFERIORES DE RESUMEN (WIDTH: 854)
 # ========================================================
 bar_volumes: {
-  width: 1020
-  height: 70
+  width: 854
   style: {
     fill: "#F5F5F5"
     stroke: "#9E9E9E"
     stroke-width: 1
-    border-radius: 8
+    border-radius: 10
   }
   label: |||md
-    **Volúmenes Persistentes (Named Volumes):** `ssl_certs_vol` • `crs_rules_vol` • `sso_data_vol` • `opa_rules_vol` • `tmpfs_ram_vol` • `vlt_data_vol` • `lki_data_vol` • `pg_data_vol`
+    ### Volúmenes Persistentes (Named Volumes)
+    · `ssl_certs_vol` · `crs_rules_vol` · `sso_data_vol` · `opa_rules_vol` · `tmpfs_ram_vol` · `vlt_data_vol` · `lki_data_vol` · `pg_data_vol`
   |||
 }
 
 bar_secrets: {
-  width: 1020
-  height: 70
+  width: 854
   style: {
     fill: "#FDF3E7"
     stroke: "#E68A00"
     stroke-width: 1
-    border-radius: 8
+    border-radius: 10
   }
   label: |||md
-    **Gestión de Secretos — CERO .env en Código Fuente:** HashiCorp Vault KV v2 con rotación automática de leasing • Claves RSA / JWT y contraseñas DB efímeras montadas exclusivamente en `tmpfs` RAM volátil
+    ### Gestión de Secretos — CERO .env en Código Fuente
+    · HashiCorp Vault KV v2 con rotación de leasing · Claves RSA/JWT y contraseñas DB montadas exclusivamente en `tmpfs` RAM volátil
   |||
 }
 
 bar_networks: {
-  width: 1020
-  height: 70
+  width: 854
   style: {
     fill: "#E8F1FA"
     stroke: "#4A89DC"
     stroke-width: 1
-    border-radius: 8
+    border-radius: 10
   }
   label: |||md
-    **Segmentación de Redes Zero Trust:** `frontend_net` (edge_perimeter, waf_modsec) • `security_net` (keycloak, opa, vault) • `backend_net` (jailed_backend, hardened_db) • `observability_net` (audit_compliance)
+    ### Segmentación de Redes Zero Trust
+    · `frontend_net` (edge_perimeter, waf_modsec) · `security_net` (keycloak, opa, vault) · `backend_net` (jailed_backend, hardened_db) · `observability_net` (audit_compliance)
   |||
 }
 
 bar_resilience: {
-  width: 1020
-  height: 48
+  width: 854
   style: {
     fill: "#EBF7EE"
     stroke: "#43A047"
     stroke-width: 1
-    border-radius: 8
+    border-radius: 10
   }
   label: |||md
-    **Resiliencia y Health Checks:** `restart: unless-stopped` • `depends_on: service_healthy` en cascada • Readiness probes `/healthz` • Auditoría continua pgaudit
+    ### Resiliencia y Health Checks
+    · `restart: unless-stopped` · `depends_on: service_healthy` en cascada · Readiness probes `/healthz` · Auditoría continua `pgaudit`
   |||
-}
-
-# Flujo vertical limpio hacia matriz y barras
-layer_6_persistence -> rbac_matrix: {
-  style: { stroke: "transparent" }
-}
-rbac_matrix -> bar_volumes: {
-  style: { stroke: "transparent" }
-}
-bar_volumes -> bar_secrets: {
-  style: { stroke: "transparent" }
-}
-bar_secrets -> bar_networks: {
-  style: { stroke: "transparent" }
-}
-bar_networks -> bar_resilience: {
-  style: { stroke: "transparent" }
 }

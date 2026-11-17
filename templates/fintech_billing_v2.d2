@@ -1,352 +1,465 @@
-vars: {
-  layout-engine: elk
+direction: down
+grid-columns: 1
+grid-gap: 16
+
+# ========================================================
+# PALETA PASTEL SEMÁNTICA OFICIAL (BORDER-RADIUS: 10)
+# ========================================================
+classes: {
+  mint: {
+    style: {
+      fill: "#EBF7EE"
+      stroke: "#43A047"
+      font-color: "#1B5E20"
+      border-radius: 10
+      stroke-width: 2
+    }
+  }
+  sky: {
+    style: {
+      fill: "#E8F1FA"
+      stroke: "#4A89DC"
+      font-color: "#1A237E"
+      border-radius: 10
+      stroke-width: 2
+    }
+  }
+  lavender: {
+    style: {
+      fill: "#EFEBF9"
+      stroke: "#7E57C2"
+      font-color: "#311B92"
+      border-radius: 10
+      stroke-width: 2
+    }
+  }
+  amber: {
+    style: {
+      fill: "#FDF3E7"
+      stroke: "#E68A00"
+      font-color: "#4E342E"
+      border-radius: 10
+      stroke-width: 2
+    }
+  }
+  rose: {
+    style: {
+      fill: "#FCECEF"
+      stroke: "#D85C72"
+      font-color: "#4A151B"
+      border-radius: 10
+      stroke-width: 2
+    }
+  }
 }
 
-direction: down
-
 # ========================================================
-# ACTORES EXTERNOS / ENTIDADES DE INTEGRACIÓN
+# 1. FRONTERA EXTERNA & ACTORES (WIDTH: 854)
 # ========================================================
-external_actors: "Frontera Externa (Tráfico No Confiable & APIs Bancarias/Fiscales)" {
+external_actors: "Frontera Externa & APIs Bancarias/Fiscales" {
+  width: 854
   style: {
-    fill: "#F5F5F5"
-    stroke: "#616161"
-    stroke-width: 2
-    stroke-dash: 3
-    border-radius: 12
+    fill: "#FAFAFA"
+    stroke: "#BDBDBD"
+    stroke-width: 1
+    border-radius: 10
   }
   grid-columns: 3
+  grid-gap: 18
 
   merchant_client: {
+    width: 260
     label: |||md
-      **merchant_pos_client**
-      Web Browser / Mobile POS / ERP
-      Port: 443 / TLS 1.3
-      Comercios & Compradores | Vol: client_app
+      ### merchant_pos_client
+      **Browser / POS / Mobile**
+      · Port 443 · TLS 1.3
+      · Comercios & Compradores
     |||
-    style: { fill: "#F5F5F5"; stroke: "#616161"; border-radius: 12; stroke-width: 2 }
+    style: { fill: "#F5F5F5"; stroke: "#9E9E9E"; border-radius: 10; stroke-width: 2 }
   }
 
   bank_psp_gateway: {
+    class: amber
+    width: 260
     label: |||md
-      **bank_psp_webhooks**
-      Stripe / Adyen / SPEI / ACH
-      Port: 443 / Webhook HTTPS
-      Eventos de Cobro y Dispersión | Vol: ext_gateway
+      ### bank_psp_webhooks
+      **Stripe / SPEI / Adyen**
+      · Port 443 · Webhook HTTPS
+      · Eventos de Cobro y Dispersión
     |||
-    style: { fill: "#FFF3E0"; stroke: "#EF6C00"; border-radius: 12; stroke-width: 2 }
   }
 
   tax_authority_api: {
+    class: rose
+    width: 260
     label: |||md
-      **tax_authority_service**
-      Hacienda / SAT / DIAN / SRI
-      Port: 443 / HTTPS SOAP-REST
-      PAC / Servicio de Timbrado Fiscal | Vol: gov_cloud
+      ### tax_authority_service
+      **Hacienda / SAT / DIAN**
+      · Port 443 · HTTPS SOAP-REST
+      · PAC / Timbrado Fiscal
     |||
-    style: { fill: "#FCE4EC"; stroke: "#C2185B"; border-radius: 12; stroke-width: 2 }
   }
 }
 
 # ========================================================
-# CAPA 1 & 2: SUBRED PERIMETRAL SEGURA (frontend_net)
+# 2. SUBRED PERIMETRAL & INGRESS DMZ (WIDTH: 854)
 # ========================================================
-frontend_net: "Capa 1 & 2: Subred Perimetral & Ingress DMZ (frontend_net)" {
+frontend_net: "Capa 1 & 2: Subred Perimetral DMZ (frontend_net)" {
+  width: 854
   style: {
-    fill: "#F5F5F5"
-    stroke: "#616161"
-    stroke-width: 2
-    stroke-dash: 3
-    border-radius: 12
+    fill: "#FAFAFA"
+    stroke: "#BDBDBD"
+    stroke-width: 1
+    border-radius: 10
   }
   grid-columns: 3
+  grid-gap: 18
 
   edge_waf_proxy: {
+    class: mint
+    width: 260
     label: |||md
-      **edge_waf_proxy**
-      Nginx:1.27 + ModSecurity-v3
-      Port: 443 / TLS 1.3
-      OWASP CRS v4 + Rate Limiter | Vol: certs_waf_vol
+      ### edge_waf_proxy
+      **Nginx 1.27 + ModSec v3**
+      · Port 443 · TLS 1.3
+      · OWASP CRS v4 · certs_vol
     |||
-    style: { fill: "#E8F5E9"; stroke: "#2E7D32"; border-radius: 12; stroke-width: 2 }
   }
 
   webhook_validator: {
+    class: mint
+    width: 260
     label: |||md
-      **webhook_ingress_guard**
-      Go:1.23 Edge Service
-      Port: 8080 / HTTP (Internal)
-      Validación Cripto HMAC-SHA256 | Vol: ephemeral_keys
+      ### webhook_ingress_guard
+      **Go 1.23 Edge Service**
+      · Port 8080 · HTTP Interno
+      · Validación HMAC-SHA256
     |||
-    style: { fill: "#E8F5E9"; stroke: "#2E7D32"; border-radius: 12; stroke-width: 2 }
   }
 
   web_portal: {
+    class: sky
+    width: 260
     label: |||md
-      **merchant_portal_frontend**
-      Node.js:20-alpine (Next.js 14)
-      Port: 3000 / HTTP (Internal)
-      Dashboard Multi-Tenant BFF | Vol: frontend_cache
+      ### merchant_portal_bff
+      **Next.js 14 Alpine**
+      · Port 3000 · HTTP Interno
+      · Dashboard Multi-Tenant
     |||
-    style: { fill: "#E3F2FD"; stroke: "#1565C0"; border-radius: 12; stroke-width: 2 }
   }
 }
 
 # ========================================================
-# CAPA 3 & 5: SUBRED DE SEGURIDAD, IAM & VAULT (security_net)
+# 3. CONTROL PLANE, IAM & VAULT (WIDTH: 854)
 # ========================================================
-security_net: "Capa 3 & 5: Control Plane, IAM & Bóveda Criptográfica (security_net)" {
+security_net: "Capa 3 & 5: IAM, Políticas & Bóveda Criptográfica (security_net)" {
+  width: 854
   style: {
-    fill: "#F5F5F5"
-    stroke: "#616161"
-    stroke-width: 2
-    stroke-dash: 3
-    border-radius: 12
+    fill: "#FAFAFA"
+    stroke: "#BDBDBD"
+    stroke-width: 1
+    border-radius: 10
   }
   grid-columns: 3
+  grid-gap: 18
 
   iam_keycloak: {
+    class: amber
+    width: 260
     label: |||md
-      **iam_keycloak**
-      Keycloak:25.0-quarkus
-      Port: 8443 / HTTPS
-      OIDC Server & JWT (15m TTL) | Vol: keycloak_data_vol
+      ### iam_keycloak
+      **Keycloak 25 Quarkus**
+      · Port 8443 · HTTPS
+      · OIDC & JWT 15m · sso_data
     |||
-    style: { fill: "#FFF3E0"; stroke: "#EF6C00"; border-radius: 12; stroke-width: 2 }
   }
 
   opa_policy_engine: {
+    class: amber
+    width: 260
     label: |||md
-      **opa_policy_engine**
-      OPA:0.67 (Open Policy Agent)
-      Port: 8181 / REST
-      Enforcer de Políticas RBAC/Tenant | Vol: opa_policies_vol
+      ### opa_policy_engine
+      **OPA 0.67 Rego**
+      · Port 8181 · REST
+      · Enforcer RBAC/Tenant
     |||
-    style: { fill: "#FFF3E0"; stroke: "#EF6C00"; border-radius: 12; stroke-width: 2 }
   }
 
   vault_kms_cluster: {
+    class: rose
+    width: 260
     label: |||md
-      **vault_kms_transit**
-      HashiCorp-Vault:1.17 Clustered
-      Port: 8200 / HTTPS (mTLS)
-      Transit KEK + P12 en tmpfs RAM | Vol: vault_storage_vol
+      ### vault_kms_transit
+      **HashiCorp Vault Clustered**
+      · Port 8200 · mTLS
+      · Transit KEK · P12 en tmpfs
     |||
-    style: { fill: "#FCE4EC"; stroke: "#C2185B"; border-radius: 12; stroke-width: 2 }
   }
 }
 
 # ========================================================
-# CAPA 4: SUBRED CORE TRANSACCIONAL & WORKERS (backend_net)
+# 4. CORE TRANSACCIONAL & BULKHEAD WORKERS (WIDTH: 854)
 # ========================================================
-backend_net: "Capa 4: Core Transaccional & Aislamiento de Cargas (backend_net)" {
+backend_net: "Capa 4: Core Transaccional & Aislamiento de Workers (backend_net)" {
+  width: 854
   style: {
-    fill: "#F5F5F5"
-    stroke: "#616161"
-    stroke-width: 2
-    stroke-dash: 3
-    border-radius: 12
+    fill: "#FAFAFA"
+    stroke: "#BDBDBD"
+    stroke-width: 1
+    border-radius: 10
   }
   grid-columns: 3
+  grid-gap: 18
 
   api_core: {
+    class: sky
+    width: 260
     label: |||md
-      **api_billing_core**
-      Python:3.12-slim (FastAPI Async)
-      Port: 8000 / HTTP (Internal)
-      Orquestador & Idempotency Check | Vol: tmpfs_core_vol
+      ### api_billing_core
+      **FastAPI Async py3.12**
+      · Port 8000 · HTTP Interno
+      · Orquestador & Idempotencia
     |||
-    style: { fill: "#E3F2FD"; stroke: "#1565C0"; border-radius: 12; stroke-width: 2 }
   }
 
   redis_ha_cluster: {
+    class: amber
+    width: 260
     label: |||md
-      **redis_idempotency_cache**
-      Redis:7.2-alpine (Sentinel HA)
-      Port: 6379 / TLS
-      SETNX Idempotency Locks | Vol: redis_data_vol
+      ### redis_idempotency
+      **Redis 7.2 Sentinel HA**
+      · Port 6379 · TLS
+      · SETNX Idempotency Locks
     |||
-    style: { fill: "#FFF3E0"; stroke: "#EF6C00"; border-radius: 12; stroke-width: 2 }
   }
 
   message_broker: {
+    class: amber
+    width: 260
     label: |||md
-      **rabbitmq_cluster**
-      RabbitMQ:3.13-management
-      Port: 5672 / AMQPS
-      Priority Queues, Retries & DLX | Vol: rabbit_data_vol
+      ### rabbitmq_cluster
+      **RabbitMQ 3.13 Clustered**
+      · Port 5672 · AMQPS
+      · Priority Queues & DLX
     |||
-    style: { fill: "#FFF3E0"; stroke: "#EF6C00"; border-radius: 12; stroke-width: 2 }
   }
 
   payment_worker: {
+    class: sky
+    width: 260
     label: |||md
-      **worker_payments_priority**
-      Python:3.12-slim (Celery Solo)
-      Daemon / Cola: q_payments_priority
-      Cobros & Conciliación Express | Vol: tmpfs_pay_vol
+      ### worker_payments
+      **Celery Solo py3.12**
+      · Daemon · q_payments
+      · Cobros & Conciliación Express
     |||
-    style: { fill: "#E3F2FD"; stroke: "#1565C0"; border-radius: 12; stroke-width: 2 }
   }
 
   fiscal_worker: {
+    class: sky
+    width: 260
     label: |||md
-      **worker_fiscal_stamper**
-      Python:3.12-slim (Circuit Breaker)
-      Daemon / Retry Exponential + DLQ
-      Timbrado Fiscal con Fallback | Vol: tmpfs_ram_certs
+      ### worker_fiscal_stamper
+      **Python 3.12 Circuit Breaker**
+      · Daemon · Retry Exp + DLQ
+      · Timbrado Fiscal con Fallback
     |||
-    style: { fill: "#E3F2FD"; stroke: "#1565C0"; border-radius: 12; stroke-width: 2 }
   }
 
   docgen_worker: {
+    class: sky
+    width: 260
     label: |||md
-      **worker_docgen_bulkhead**
-      Python:3.12-slim (WeasyPrint)
-      Daemon / CPU-Mem Restricted
-      Render Aislado PDF/XML Fiscal | Vol: tmpfs_doc_vol
+      ### worker_docgen_bulkhead
+      **Python 3.12 WeasyPrint**
+      · Daemon · Memoria Aislada
+      · Render PDF/XML Fiscal
     |||
-    style: { fill: "#E3F2FD"; stroke: "#1565C0"; border-radius: 12; stroke-width: 2 }
   }
 }
 
 # ========================================================
-# CAPA 6: SUBRED DE DATOS DE ALTA DISPONIBILIDAD (data_net)
+# 5. PERSISTENCIA SEGURA HA & ALMACÉN S3 (WIDTH: 854)
 # ========================================================
-data_net: "Capa 6: Persistencia Segura HA & Almacén S3 WORM (data_net)" {
+data_net: "Capa 6: Persistencia Transaccional & Almacén WORM (data_net)" {
+  width: 854
   style: {
-    fill: "#F5F5F5"
-    stroke: "#616161"
-    stroke-width: 2
-    stroke-dash: 3
-    border-radius: 12
+    fill: "#FAFAFA"
+    stroke: "#BDBDBD"
+    stroke-width: 1
+    border-radius: 10
   }
   grid-columns: 2
+  grid-gap: 20
 
   pgbouncer_pool: {
+    class: mint
+    width: 400
     label: |||md
-      **pgbouncer_pooler**
-      PgBouncer:1.22-alpine
-      Port: 6432 / SSL (Internal)
-      Pooling Transaccional | Vol: pgbouncer_conf
+      ### pgbouncer_pooler
+      **PgBouncer 1.22 Alpine**
+      · Port 6432 · SSL Interno
+      · Connection Pool Transaccional
     |||
-    style: { fill: "#E8F5E9"; stroke: "#2E7D32"; border-radius: 12; stroke-width: 2 }
   }
 
   minio_s3_storage: {
+    class: mint
+    width: 400
     label: |||md
-      **minio_s3_worm**
-      MinIO:RELEASE.2024-08
-      Port: 9000 / HTTPS (Internal)
-      WORM Inmutable + AES-256 SSE | Vol: minio_storage_vol
+      ### minio_s3_worm
+      **MinIO S3 RELEASE.2024**
+      · Port 9000 · HTTPS
+      · WORM Inmutable + AES-256
     |||
-    style: { fill: "#E8F5E9"; stroke: "#2E7D32"; border-radius: 12; stroke-width: 2 }
   }
 
   db_primary: {
+    class: mint
+    width: 400
     label: |||md
-      **db_postgres_primary**
-      PostgreSQL:16-alpine (Patroni HA)
-      Port: 5432 / SSL Verify-Full
-      Master Escrituras + RLS + pgaudit | Vol: pg_primary_vol
+      ### db_postgres_primary
+      **PostgreSQL 16 Patroni HA**
+      · Port 5432 · SSL Verify-Full
+      · Master Escrituras + RLS
     |||
-    style: { fill: "#E8F5E9"; stroke: "#2E7D32"; border-radius: 12; stroke-width: 2 }
   }
 
   db_replica: {
+    class: mint
+    width: 400
     label: |||md
-      **db_postgres_read_replica**
-      PostgreSQL:16-alpine (Streaming)
-      Port: 5432 / SSL Verify-Full
-      Hot Standby Lecturas & Reportería | Vol: pg_replica_vol
+      ### db_postgres_read_replica
+      **PostgreSQL 16 Streaming**
+      · Port 5432 · SSL Verify-Full
+      · Hot Standby Lecturas
     |||
-    style: { fill: "#E8F5E9"; stroke: "#2E7D32"; border-radius: 12; stroke-width: 2 }
   }
 }
 
 # ========================================================
-# SUBRED DE TELEMETRÍA & SECOPS (observability_net)
+# 6. OBSERVABILIDAD & TELEMETRÍA (WIDTH: 854)
 # ========================================================
 observability_net: "Monitoreo, Auditoría & Alerting (observability_net)" {
+  width: 854
   style: {
-    fill: "#F5F5F5"
-    stroke: "#616161"
-    stroke-width: 2
-    stroke-dash: 3
-    border-radius: 12
+    fill: "#FAFAFA"
+    stroke: "#BDBDBD"
+    stroke-width: 1
+    border-radius: 10
   }
   grid-columns: 4
+  grid-gap: 18
 
   prometheus_telemetry: {
+    class: sky
+    width: 200
     label: |||md
-      **prometheus_metrics**
-      Prometheus:v2.54.0
-      Port: 9090 / HTTP
-      Métricas Circuit Breaker & Queues | Vol: prom_data_vol
+      ### prometheus_tsdb
+      **Prometheus v2.54**
+      · Port 9090 · HTTP
+      · Métricas Circuit Breakers
     |||
-    style: { fill: "#E3F2FD"; stroke: "#1565C0"; border-radius: 12; stroke-width: 2 }
   }
 
   loki_audit_logs: {
+    class: sky
+    width: 200
     label: |||md
-      **loki_audit_logs**
-      Grafana-Loki:3.1.0
-      Port: 3100 / HTTP
-      Trazas Forenses pgaudit & WAF | Vol: loki_data_vol
+      ### loki_audit_logs
+      **Grafana Loki 3.1**
+      · Port 3100 · HTTP
+      · Trazas pgaudit & WAF
     |||
-    style: { fill: "#E3F2FD"; stroke: "#1565C0"; border-radius: 12; stroke-width: 2 }
   }
 
   alertmanager_ops: {
+    class: rose
+    width: 200
     label: |||md
-      **alertmanager_secops**
-      Alertmanager:0.27
-      Port: 9093 / HTTP
-      Alertas DLQ Spike & Circuit OPEN | Vol: alert_conf_vol
+      ### alertmanager_secops
+      **Alertmanager 0.27**
+      · Port 9093 · HTTP
+      · Alertas DLQ & Breakers
     |||
-    style: { fill: "#FCE4EC"; stroke: "#C2185B"; border-radius: 12; stroke-width: 2 }
   }
 
   grafana_dashboard: {
+    class: sky
+    width: 200
     label: |||md
-      **grafana_dashboard**
-      Grafana:11.1.0
-      Port: 3000 / HTTP
-      SLOs Financieros & Panel SecOps | Vol: grafana_data_vol
+      ### grafana_dashboard
+      **Grafana 11.1**
+      · Port 3000 · HTTP
+      · Panel SecOps & SLOs
     |||
-    style: { fill: "#E3F2FD"; stroke: "#1565C0"; border-radius: 12; stroke-width: 2 }
   }
 }
 
 # ========================================================
-# CONEXIONES VERTICALES Y FLUJOS ZERO TRUST
+# FLUJOS ENTRE BANDAS (SECUENCIALES Y LOCALES)
 # ========================================================
-external_actors -> frontend_net: "Tráfico Público HTTPS / Webhooks"
+external_actors -> frontend_net: "Tráfico HTTPS 443 / Webhooks"
 frontend_net -> backend_net: "Tráfico L7 Filtrado"
-backend_net -> security_net: "mTLS Tokens, Auth & KEK"
-backend_net -> data_net: "Pool Transaccional & Persistencia WORM"
-backend_net -> observability_net: "Métricas & Logs de Auditoría"
+backend_net -> security_net: "mTLS Tokens, Auth & Transit KMS"
+backend_net -> data_net: "Transaccional Read/Write & S3 WORM"
+backend_net -> observability_net: "Telemetría & Trazas Forenses"
 
-# Interacciones clave de nodos
-external_actors.merchant_client -> frontend_net.edge_waf_proxy: "HTTPS 443"
-external_actors.bank_psp_gateway -> frontend_net.webhook_validator: "HMAC-SHA256"
+# ========================================================
+# BARRAS TRANSVERSALES INFERIORES DE RESUMEN (WIDTH: 854)
+# ========================================================
+bar_volumes: {
+  width: 854
+  style: {
+    fill: "#F5F5F5"
+    stroke: "#9E9E9E"
+    stroke-width: 1
+    border-radius: 10
+  }
+  label: |||md
+    ### Volúmenes Persistentes (Named Volumes)
+    · `certs_waf_vol` · `keycloak_data_vol` · `vault_storage_vol` · `rabbit_data_vol` · `redis_data_vol` · `pg_primary_vol` · `pg_replica_vol` · `minio_storage_vol` · `prom_data_vol` · `loki_data_vol`
+  |||
+}
 
-frontend_net.edge_waf_proxy -> backend_net.api_core: "Forward API Request"
-frontend_net.webhook_validator -> backend_net.api_core: "Validated Webhook Event"
+bar_secrets: {
+  width: 854
+  style: {
+    fill: "#FDF3E7"
+    stroke: "#E68A00"
+    stroke-width: 1
+    border-radius: 10
+  }
+  label: |||md
+    ### Gestión de Secretos — CERO .env en Código Fuente
+    · Vault KV v2 con rotación de leasing · Transit KMS descifra certificados digitales `.p12` exclusivamente en `tmpfs` RAM volátil sin tocar disco
+  |||
+}
 
-backend_net.api_core -> backend_net.redis_ha_cluster: "SETNX Idempotency Lock"
-backend_net.api_core -> backend_net.message_broker: "AMQPS Dispatch"
+bar_networks: {
+  width: 854
+  style: {
+    fill: "#E8F1FA"
+    stroke: "#4A89DC"
+    stroke-width: 1
+    border-radius: 10
+  }
+  label: |||md
+    ### Segmentación de Redes Zero Trust
+    · `frontend_net` (DMZ WAF) · `security_net` (IAM/KMS) · `backend_net` (Core API & Workers) · `data_net` (Postgres HA & S3 WORM) · `observability_net` (Telemetría)
+  |||
+}
 
-backend_net.message_broker -> backend_net.payment_worker: "q_payments_priority"
-backend_net.message_broker -> backend_net.fiscal_worker: "q_fiscal_stamping"
-backend_net.message_broker -> backend_net.docgen_worker: "q_docgen_bulkhead"
-
-backend_net.fiscal_worker -> security_net.vault_kms_cluster: "Decrypt P12 into tmpfs RAM"
-backend_net.fiscal_worker -> external_actors.tax_authority_api: "Timbrado Fiscal (Circuit Breaker)"
-
-backend_net.docgen_worker -> data_net.minio_s3_storage: "Upload Signed PDF/XML"
-
-backend_net.api_core -> data_net.pgbouncer_pool: "Transaccional Read/Write"
-data_net.pgbouncer_pool -> data_net.db_primary: "Writes + RLS"
-data_net.pgbouncer_pool -> data_net.db_replica: "Reads"
-data_net.db_primary -> data_net.db_replica: "Streaming Replication"
+bar_resilience: {
+  width: 854
+  style: {
+    fill: "#EBF7EE"
+    stroke: "#43A047"
+    stroke-width: 1
+    border-radius: 10
+  }
+  label: |||md
+    ### Resiliencia y Health Checks
+    · Circuit Breaker con DLQ en llamadas a Hacienda · Idempotencia con Redis SETNX · Bulkhead para workers de PDFs · Master-Replica HA con streaming
+  |||
+}

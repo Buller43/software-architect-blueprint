@@ -64,45 +64,49 @@ Todo plano arquitectónico debe detallar las medidas de contención en cada capa
 
 ## 4. REGLAS VISUALES OBLIGATORIAS PARA TERRATRUCT D2
 
-Para garantizar que todos los diagramas generados tengan **proporción vertical ejecutiva (tipo hoja A4)**, nitidez impecable, legibilidad y **cero telarañas de flechas cruzadas**, aplica obligatoriamente estas directrices:
+Para garantizar que todos los diagramas generados tengan **proporción vertical ejecutiva (tipo hoja A4)**, nitidez impecable, legibilidad y **cero telarañas de flechas diagonales**, aplica obligatoriamente estas directrices:
 
-### A. Cabecera de Configuración D2 Obligatoria
-Todo archivo `.d2` debe iniciar exactamente con este encabezado:
+### A. Prohibición Absoluta de Bloques `vars` en Código D2
+- **PROHIBIDO** incluir bloques `vars: { d2-config: ... }` o `vars: { ... }` dentro de los archivos `.d2`. La inclusión de variables en el código provoca que el compilador renderice cuadros gráficos `vars` flotantes no deseados en el lienzo.
+- El motor de layout y el tema visual se configuran **exclusivamente por línea de comandos (CLI)**:
+  ```bash
+  d2 --layout=elk --theme=0 --pad=24 <archivo>.d2 <archivo>.png
+  ```
+
+### B. Estructura Raíz y Proporción A4 (Bandas Verticales)
+Todo archivo `.d2` debe iniciar en la raíz con la directiva de flujo descendente y cuadrícula de una columna:
 ```d2
 direction: down
-layout-engine: elk
-theme-id: 0
-sketch: false
-vars: {
-  font: sans
-}
+grid-columns: 1
+grid-gap: 16
 ```
+Esto fuerza a Terrastruct D2 a apilar ordenadamente las bandas arquitectónicas de forma vertical, manteniendo una proporción ejecutiva tipo hoja A4.
 
-### B. Proporción y Cuadrícula (Máximo 4 Columnas)
-- **Prohibido colocar más de 4 tarjetas en horizontal** o apilar subredes anchas lado a lado.
-- Utiliza contenedores organizados con `grid-columns: 4` (o `2` / `3` según la capa).
-- Dimensiones fijas de tarjeta obligatorias: **`width: 235`** y **`height: 120`**.
-- Cada nodo debe tener **exactamente 4 líneas de texto centrado** (máximo 26 caracteres por línea para evitar desbordamientos):
-  1. `**nombre_snake_case**` (en negrita)
-  2. `Tecnología:Versión`
-  3. `Puerto / Protocolo`
-  4. `Responsabilidad y Volumen`
+### C. Formateo de Nodos con Bloques Markdown (`|md ... |`)
+Cada nodo debe formatearse mediante bloques Markdown estructurados con encabezados `###`, texto en negrita y viñetas descriptivas separadas por punto medio `·`. **Queda prohibido el uso de textos largos de una sola línea separados por plecas `|`**:
 
-Ejemplo de definición estandarizada de nodo:
 ```d2
 edge_waf_proxy: {
   class: mint
+  width: 200
   label: |||md
-    **edge_waf_proxy**
-    Nginx:1.27 + ModSec
-    Port: 443 / TLS 1.3
-    Ingress WAF | certs_vol
+    ### edge_waf_proxy
+    **Nginx 1.27 + ModSec**
+    · Port 443 · TLS 1.3
+    · Ingress WAF · certs_vol
   |||
 }
 ```
 
-### C. Paleta Semántica Pastel Oficial
-Declara las siguientes clases semánticas reutilizables al inicio del archivo:
+### D. Anchos Fijos Alineados y Geometría Consistente
+Para lograr una alineación matemática perfecta y evitar desajustes visuales:
+- **Bandas completas y Barras de Resumen:** `width: 820` o `width: 854`.
+- **Grillas de 2 columnas:** `grid-columns: 2`, `grid-gap: 20` con tarjetas de `width: 400` ($2 \times 400 + 20 = 820$).
+- **Matrices 3x4 (4 columnas):** `grid-columns: 4`, `grid-gap: 18` con tarjetas de `width: 200` ($4 \times 200 + 3 \times 18 = 854$).
+- **Bordes redondeados uniformes:** `border-radius: 10` en todas las clases y contenedores.
+
+### E. Paleta Semántica Pastel Oficial
+Declara las clases semánticas al inicio del archivo:
 
 ```d2
 classes: {
@@ -111,86 +115,68 @@ classes: {
       fill: "#EBF7EE"
       stroke: "#43A047"
       font-color: "#1B5E20"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
   sky: {
     style: {
       fill: "#E8F1FA"
       stroke: "#4A89DC"
       font-color: "#1A237E"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
   lavender: {
     style: {
       fill: "#EFEBF9"
       stroke: "#7E57C2"
       font-color: "#311B92"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
   amber: {
     style: {
       fill: "#FDF3E7"
       stroke: "#E68A00"
       font-color: "#4E342E"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
   rose: {
     style: {
       fill: "#FCECEF"
       stroke: "#D85C72"
       font-color: "#4A151B"
-      border-radius: 12
+      border-radius: 10
       stroke-width: 2
     }
-    width: 235
-    height: 120
   }
 }
 ```
 
 | Color Pastel | Fill / Stroke / Text | Asignación Arquitectónica |
 | :--- | :--- | :--- |
-| **Verde Menta (`mint`)** | `#EBF7EE` / `#43A047` / `#1B5E20` | Proxy, Firewall, Persistencia PostgreSQL, Health Checks. |
-| **Azul Cielo (`sky`)** | `#E8F1FA` / `#4A89DC` / `#1A237E` | Backend Core, Monitoreo, Redes y Telemetría. |
-| **Lavanda (`lavender`)** | `#EFEBF9` / `#7E57C2` / `#311B92` | Frontend UI / BFF, Audit & Compliance. |
+| **Verde Menta (`mint`)** | `#EBF7EE` / `#43A047` / `#1B5E20` | Proxy, Ingress WAF, Persistencia PostgreSQL, Health Checks. |
+| **Azul Cielo (`sky`)** | `#E8F1FA` / `#4A89DC` / `#1A237E` | Backend Core API, Monitoreo, Redes y Telemetría. |
+| **Lavanda (`lavender`)** | `#EFEBF9` / `#7E57C2` / `#311B92` | Frontend UI / BFF, Audit Forensics & Compliance. |
 | **Ámbar (`amber`)** | `#FDF3E7` / `#E68A00` / `#4E342E` | Caché Redis, Autenticación Keycloak, OPA, Secretos. |
-| **Rosa (`rose`)** | `#FCECEF` / `#D85C72` / `#4A151B` | HashiCorp Vault, Storage MinIO, Workers Asíncronos. |
+| **Rosa (`rose`)** | `#FCECEF` / `#D85C72` / `#4A151B` | HashiCorp Vault, Storage MinIO S3, Workers Asíncronos. |
 
-### D. Barras Transversales Inferiores (Ancho Completo `width: 1020`)
-Para evitar cruces de líneas y "telarañas" caóticas en el diagrama, **NO traces flechas hacia volúmenes, redes ni políticas**. En su lugar, apila al final del plano **4 barras horizontales de ancho completo (`width: 1020`)**:
-
-1. **Barra Gris (`#F5F5F5` / borde `#9E9E9E`, `width: 1020`, `height: 70`):**
-   **Volúmenes Persistentes:** Listado explícito de todos los named volumes de la arquitectura (`certs_vol`, `keycloak_data`, `vault_storage`, `postgres_data`, `redis_data`, `minio_data`, etc.).
-2. **Barra Ámbar (`#FDF3E7` / borde `#E68A00`, `width: 1020`, `height: 70`):**
-   **Gestión de Secretos — CERO .env en Código Fuente:** Inyección dinámica vía HashiCorp Vault KV v2 con rotación de leasing, tokens efímeros montados en `tmpfs` RAM y rotación sin reinicio.
-3. **Barra Azul (`#E8F1FA` / borde `#4A89DC`, `width: 1020`, `height: 70`):**
-   **Segmentación de Redes Zero Trust:** Detalle de pertenencia de servicios a cada red (`frontend_net`, `security_net`, `backend_net`, `media_net`, `observability_net`).
-4. **Barra Verde (`#EBF7EE` / borde `#43A047`, `width: 1020`, `height: 48`):**
-   **Resiliencia y Health Checks:** Directivas `restart: unless-stopped`, dependencias condicionales `depends_on: service_healthy`, Circuit Breakers y readiness probes `/healthz`.
-
-Conecta el contenedor principal de servicios con la primera barra y luego encadena las barras entre sí con enlaces transparentes:
-```d2
-services_grid -> bar_volumes: { style: { stroke: "transparent" } }
-bar_volumes -> bar_secrets: { style: { stroke: "transparent" } }
-bar_secrets -> bar_networks: { style: { stroke: "transparent" } }
-bar_networks -> bar_resilience: { style: { stroke: "transparent" } }
-```
+### F. Prohibición de Flechas Diagonales y Barras Resumen Inferiores
+- **Prohibido trazar flechas diagonales largas** que crucen contenedores o conecten servicios directamente a volúmenes y redes.
+- Las dependencias y configuraciones transversales se documentan mediante **4 barras horizontales inferiores de ancho completo (`width: 820` o `854`)**:
+  1. **Barra Gris (`#F5F5F5` / `#9E9E9E`, `border-radius: 10`):**
+     **Volúmenes:** Listado explícito de named volumes (`certs_waf_vol`, `keycloak_data`, `vault_storage`, `postgres_data`, etc.).
+  2. **Barra Ámbar (`#FDF3E7` / `#E68A00`, `border-radius: 10`):**
+     **Gestión de Secretos:** Vault KV v2, rotación dinámica de leasing y credenciales efímeras en `tmpfs` RAM (cero `.env`).
+  3. **Barra Azul (`#E8F1FA` / `#4A89DC`, `border-radius: 10`):**
+     **Segmentación de Redes:** Relación de servicios asignados a `frontend_net`, `security_net`, `backend_net`, `media_net` y `observability_net`.
+  4. **Barra Verde (`#EBF7EE` / `#43A047`, `border-radius: 10`):**
+     **Resiliencia y Health Checks:** Directivas `restart: unless-stopped`, `depends_on: service_healthy`, Circuit Breakers y readiness probes `/healthz`.
 
 ---
 
@@ -208,15 +194,15 @@ Antes de entregar cualquier plano final, el agente debe actuar como su propio **
 
 ## 6. COMANDO DE COMPILACIÓN VECTORIAL
 
-Todo plano D2 debe compilarse automáticamente a imagen rasterizada PNG de alta resolución y SVG vectorial mediante el siguiente comando estandarizado:
+Todo plano D2 debe compilarse automáticamente mediante el siguiente comando oficial del CLI:
 
 ```bash
-d2 --layout=elk --scale=1.5 --pad=32 docs/architecture/<archivo>.d2 docs/architecture/<archivo>.png
-d2 --layout=elk docs/architecture/<archivo>.d2 docs/architecture/<archivo>.svg
+d2 --layout=elk --theme=0 --pad=24 docs/architecture/<archivo>.d2 docs/architecture/<archivo>.png
+d2 --layout=elk --theme=0 --pad=24 docs/architecture/<archivo>.d2 docs/architecture/<archivo>.svg
 ```
 
 > [!TIP]
-> Los parámetros `--layout=elk --scale=1.5 --pad=32` garantizan márgenes armónicos, enrutamiento ortogonal libre de solapamientos y una nitidez perfecta en monitores de alta densidad (Retina / 4K).
+> Los parámetros `--layout=elk --theme=0 --pad=24` garantizan enrutamiento ortogonal limpio, márgenes armónicos y evitan cuadros no deseados en el renderizado final.
 
 ---
 
@@ -224,7 +210,7 @@ d2 --layout=elk docs/architecture/<archivo>.d2 docs/architecture/<archivo>.svg
 
 Al recibir una solicitud de diseño, el agente debe producir:
 1. **Auditoría ARB y Decisiones de Arquitectura:** Justificación técnica y resolución de los 5 puntos de auto-crítica.
-2. **Plano Terrastruct D2:** Guardado en `docs/architecture/<nombre_sistema>.d2` siguiendo la cuadrícula 3x4 o multinivel (máx. 4 columnas) y las 4 barras inferiores.
-3. **Compilación Automática:** Generar los archivos `.png` y `.svg` correspondientes.
+2. **Plano Terrastruct D2:** Guardado en `docs/architecture/<nombre_sistema>.d2` con `direction: down`, `grid-columns: 1`, `grid-gap: 16`, y las 4 barras inferiores transversales.
+3. **Compilación Automática:** Generar los archivos `.png` y `.svg` con el comando CLI oficial.
 4. **Matriz de Puertos y Aislamiento:** Tabla Markdown con puertos autorizados, subredes asignadas y protocolos.
-5. **Docker Compose de Producción (`docker-compose.yml`):** Configuración lista para despliegue con hardening CIS completo (`cap_drop`, `read_only`, `tmpfs`, `healthcheck`, `user: 1000`).
+5. **Docker Compose de Producción (`docker-compose.yml`):** Configuración lista para despliegue con hardening CIS completo (`cap_drop: [ALL]`, `read_only: true`, `tmpfs`, `healthcheck`, `user: 1000:1000`).

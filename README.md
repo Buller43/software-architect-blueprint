@@ -38,10 +38,11 @@ Antes de entregar cualquier plano, la skill audita y resuelve activamente los si
 5. **Alta Disponibilidad (HA) sin SPOF:** Replicas de lectura en PostgreSQL con connection pooling balanceado (PgBouncer) y cluster / Sentinel en Redis.
 
 ### 4. Directrices Visuales Terrastruct D2 (Proporcion Hoja A4)
-- **Cabecera obligatoria:** `direction: down`, `layout-engine: elk`, `theme-id: 0`, `sketch: false`, `vars: { font: sans }`.
-- **Cuadricula compacta:** Maximo 4 columnas por fila (`grid-columns: 4` o subgrupos de 2/3).
-- **Tarjetas estandarizadas:** Dimensiones fijas de `width: 235` y `height: 120`, con 4 lineas de texto centrado (maximo 26 caracteres por linea).
-- **4 Barras Transversales Inferiores (width: 1020):** Para eliminar telaranas de lineas cruzadas, los volumenes, la gestion de secretos, la segmentacion de redes y las politicas de resiliencia se detallan en 4 barras horizontales al pie del diagrama.
+- **Cero bloques `vars`:** Prohibido incluir `vars: { ... }` en el codigo D2. El layout y el tema se pasan por CLI: `d2 --layout=elk --theme=0 --pad=24`.
+- **Raiz en bandas verticales:** `direction: down`, `grid-columns: 1`, `grid-gap: 16` para apilar bloques ordenadamente.
+- **Formateo Markdown limpio:** Cada nodo usa bloques `|md ... |` con encabezados `###`, texto en negrita y vinetas separadas por `·`. Prohibido usar textos largos de una linea con plecas `|`.
+- **Anchos fijos alineados:** Bandas completas de `width: 820` o `854`, grillas de 2 columnas con `width: 400` (`grid-gap: 20`), matrices 3x4 con `width: 200` (`grid-columns: 4`, `grid-gap: 18`) y `border-radius: 10`.
+- **4 Barras Transversales Inferiores:** Para eliminar telaranas de lineas cruzadas, los volumenes, la gestion de secretos, la segmentacion de redes y las politicas de resiliencia se detallan en 4 barras horizontales al pie del diagrama.
 
 ---
 
@@ -63,15 +64,13 @@ Antes de entregar cualquier plano, la skill audita y resuelve activamente los si
 software-architect-blueprint/
 ├── SKILL.md                               # Manifiesto principal, directrices visuales D2 y reglas de arquitectura
 ├── README.md                              # Documentacion tecnica, estandares y guia de instalacion
+├── LICENSE                                # Licencia MIT
 ├── references/
 │   └── security_6_layers.md               # Guia tecnica profunda de las 6 capas de seguridad + Matriz RBAC
 └── templates/
     ├── docker_stack_blueprint.d2          # Plantilla D2 de microservicios en cuadricula 3x4 + 4 barras
-    ├── docker_stack_blueprint.png         # Renderizado PNG compilado con layout ELK (alta resolucion)
-    ├── docker_stack_blueprint.svg         # Renderizado SVG vectorial editable
     ├── security_layers_blueprint.d2       # Plantilla D2 vertical de 6 capas de seguridad + RBAC
-    ├── security_layers_blueprint.png      # Renderizado PNG compilado con layout ELK
-    └── security_layers_blueprint.svg      # Renderizado SVG vectorial
+    └── fintech_billing_v2.d2              # Plantilla D2 para plataforma financiera SaaS multi-tenant
 ```
 
 ---
@@ -152,8 +151,8 @@ d2 --version
 
 #### Comando Estandar de Compilacion:
 ```bash
-d2 --layout=elk --scale=1.5 --pad=32 docs/architecture/<archivo>.d2 docs/architecture/<archivo>.png
-d2 --layout=elk docs/architecture/<archivo>.d2 docs/architecture/<archivo>.svg
+d2 --layout=elk --theme=0 --pad=24 docs/architecture/<archivo>.d2 docs/architecture/<archivo>.png
+d2 --layout=elk --theme=0 --pad=24 docs/architecture/<archivo>.d2 docs/architecture/<archivo>.svg
 ```
 
 ---
