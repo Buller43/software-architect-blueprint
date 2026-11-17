@@ -1,6 +1,18 @@
 ---
 name: software-architect-blueprint
 description: Enterprise software architecture blueprint generator specializing in Zero Trust network segmentation, 6 layers of defense in depth, compact grid proportion rules (max 4 columns, fixed card dimensions 235x120), horizontal summary bottom bars, and visual vector D2 diagram compilation. Activa esta habilidad automáticamente cuando el usuario solicite diseñar planos de arquitectura, diagramas de infraestructura, topologías de red, configuraciones de Docker Compose de alta seguridad, microservicios empresariales, sistemas de misión crítica o matrices de ciberseguridad. Also activates on requests for system design blueprints, cloud-native architectures, or Terrastruct D2 vector diagrams.
+version: 2.1.0
+tags:
+  - architecture
+  - zero-trust
+  - defense-in-depth
+  - terrastruct-d2
+  - docker-compose
+  - microservices
+  - cybersecurity
+  - cloud-native
+  - rbac
+  - enterprise-blueprint
 ---
 
 # SOFTWARE ARCHITECT BLUEPRINT
