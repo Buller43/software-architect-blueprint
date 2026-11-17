@@ -1,0 +1,296 @@
+direction: down
+layout-engine: elk
+theme-id: 0
+sketch: false
+vars: {
+  font: sans
+}
+
+# ========================================================
+# PALETA PASTEL SEMÁNTICA OFICIAL (DIMENSIONES FIJAS 235x120)
+# ========================================================
+classes: {
+  mint: {
+    style: {
+      fill: "#EBF7EE"
+      stroke: "#43A047"
+      font-color: "#1B5E20"
+      border-radius: 12
+      stroke-width: 2
+    }
+    width: 235
+    height: 120
+  }
+  sky: {
+    style: {
+      fill: "#E8F1FA"
+      stroke: "#4A89DC"
+      font-color: "#1A237E"
+      border-radius: 12
+      stroke-width: 2
+    }
+    width: 235
+    height: 120
+  }
+  lavender: {
+    style: {
+      fill: "#EFEBF9"
+      stroke: "#7E57C2"
+      font-color: "#311B92"
+      border-radius: 12
+      stroke-width: 2
+    }
+    width: 235
+    height: 120
+  }
+  amber: {
+    style: {
+      fill: "#FDF3E7"
+      stroke: "#E68A00"
+      font-color: "#4E342E"
+      border-radius: 12
+      stroke-width: 2
+    }
+    width: 235
+    height: 120
+  }
+  rose: {
+    style: {
+      fill: "#FCECEF"
+      stroke: "#D85C72"
+      font-color: "#4A151B"
+      border-radius: 12
+      stroke-width: 2
+    }
+    width: 235
+    height: 120
+  }
+}
+
+# ========================================================
+# CUADRÍCULA DE SERVICIOS (12 COMPONENTES EN MATRIZ 3x4)
+# ========================================================
+services_grid: "Topología de Servicios Docker (12 Componentes en Matriz 3x4)" {
+  style: {
+    fill: "#FAFAFA"
+    stroke: "#BDBDBD"
+    stroke-width: 1
+    border-radius: 12
+  }
+  grid-columns: 4
+
+  # --- FILA 1: PERÍMETRO, FRONTEND, AUTENTICACIÓN Y BÓVEDA ---
+  edge_waf_proxy: {
+    class: mint
+    label: |||md
+      **edge_waf_proxy**
+      Nginx:1.27 + ModSec
+      Port: 443 / TLS 1.3
+      Ingress WAF | certs_vol
+    |||
+  }
+
+  web_frontend: {
+    class: lavender
+    label: |||md
+      **web_frontend**
+      Next.js:14-alpine
+      Port: 3000 / HTTP
+      BFF SSR | node_cache
+    |||
+  }
+
+  iam_keycloak: {
+    class: amber
+    label: |||md
+      **iam_keycloak**
+      Keycloak:25-quarkus
+      Port: 8443 / HTTPS
+      OIDC & RBAC | sso_data
+    |||
+  }
+
+  secrets_vault: {
+    class: rose
+    label: |||md
+      **secrets_vault**
+      HashiCorp-Vault:1.17
+      Port: 8200 / mTLS
+      KV v2 Secrets | vlt_data
+    |||
+  }
+
+  # --- FILA 2: CÓMPUTO CORE, WORKERS, BROKER Y STORAGE ---
+  api_backend: {
+    class: sky
+    label: |||md
+      **api_backend**
+      FastAPI:0.112-py3.12
+      Port: 8000 / HTTP
+      Core REST API | app_tmp
+    |||
+  }
+
+  async_worker: {
+    class: rose
+    label: |||md
+      **async_worker**
+      Celery:5.4-py3.12
+      Daemon / No Port
+      Async Tasks | wrk_tmp
+    |||
+  }
+
+  redis_broker: {
+    class: amber
+    label: |||md
+      **redis_broker**
+      Redis:7.2-alpine
+      Port: 6379 / TLS
+      Cache & Queue | rds_data
+    |||
+  }
+
+  minio_storage: {
+    class: rose
+    label: |||md
+      **minio_storage**
+      MinIO:RELEASE.2024
+      Port: 9000 / S3 API
+      AES-256 S3 | s3_data
+    |||
+  }
+
+  # --- FILA 3: PERSISTENCIA Y PILA DE TELEMETRÍA ---
+  postgres_db: {
+    class: mint
+    label: |||md
+      **postgres_db**
+      PostgreSQL:16-alpine
+      Port: 5432 / SSL
+      RLS + pgaudit | pg_data
+    |||
+  }
+
+  prometheus_tsdb: {
+    class: sky
+    label: |||md
+      **prometheus_tsdb**
+      Prometheus:v2.54
+      Port: 9090 / HTTP
+      Metrics Scrape | prom_data
+    |||
+  }
+
+  loki_logs: {
+    class: sky
+    label: |||md
+      **loki_logs**
+      Grafana-Loki:3.1
+      Port: 3100 / HTTP
+      Log Collector | lki_data
+    |||
+  }
+
+  grafana_dash: {
+    class: sky
+    label: |||md
+      **grafana_dash**
+      Grafana:11.1.0
+      Port: 3000 / HTTP
+      SecOps Panel | grf_data
+    |||
+  }
+}
+
+# ========================================================
+# CONEXIONES DIRECTAS Y LIMPIAS (SIN TELARAÑAS CRUZADAS)
+# ========================================================
+services_grid.edge_waf_proxy -> services_grid.web_frontend: "Proxy Ingress (3000)"
+services_grid.edge_waf_proxy -> services_grid.api_backend: "API Ingress (8000)"
+services_grid.api_backend -> services_grid.iam_keycloak: "Token Introspect (8443)"
+services_grid.api_backend -> services_grid.secrets_vault: "Dynamic Leases (8200)"
+services_grid.api_backend -> services_grid.redis_broker: "Cache & Lock (6379)"
+services_grid.api_backend -> services_grid.postgres_db: "SQL / SSL · RLS (5432)"
+services_grid.api_backend -> services_grid.minio_storage: "Presigned S3 (9000)"
+
+services_grid.async_worker -> services_grid.redis_broker: "Task Queue Pop (6379)"
+services_grid.async_worker -> services_grid.postgres_db: "Write Results (5432)"
+services_grid.async_worker -> services_grid.secrets_vault: "mTLS Leases (8200)"
+
+services_grid.prometheus_tsdb -> services_grid.api_backend: "Scrape /metrics"
+services_grid.grafana_dash -> services_grid.prometheus_tsdb: "PromQL Queries"
+services_grid.grafana_dash -> services_grid.loki_logs: "LogQL Queries"
+
+# ========================================================
+# BARRAS TRANSVERSALES INFERIORES DE ANCHO COMPLETO (1020px)
+# ========================================================
+bar_volumes: {
+  width: 1020
+  height: 70
+  style: {
+    fill: "#F5F5F5"
+    stroke: "#9E9E9E"
+    stroke-width: 1
+    border-radius: 8
+  }
+  label: |||md
+    **Volúmenes Persistentes (Named Volumes):** `certs_waf_vol` (SSL/WAF) • `node_cache_vol` • `sso_data_vol` • `vlt_data_vol` • `app_tmpfs` • `wrk_tmpfs` • `rds_data_vol` • `s3_data_vol` • `pg_data_vol` • `prom_data_vol` • `lki_data_vol` • `grf_data_vol`
+  |||
+}
+
+bar_secrets: {
+  width: 1020
+  height: 70
+  style: {
+    fill: "#FDF3E7"
+    stroke: "#E68A00"
+    stroke-width: 1
+    border-radius: 8
+  }
+  label: |||md
+    **Gestión de Secretos — CERO .env en Código Fuente:** Inyección dinámica vía HashiCorp Vault KV v2 con rotación automática de leasing • Tokens efímeros montados en `tmpfs` RAM • Secretos de PostgreSQL, S3 y JWT rotados sin reinicio de contenedores
+  |||
+}
+
+bar_networks: {
+  width: 1020
+  height: 70
+  style: {
+    fill: "#E8F1FA"
+    stroke: "#4A89DC"
+    stroke-width: 1
+    border-radius: 8
+  }
+  label: |||md
+    **Segmentación de Redes Zero Trust:** `frontend_net` (edge_waf, web_frontend) • `security_net` (iam_keycloak, secrets_vault, api_backend) • `backend_net` (api_backend, async_worker, redis_broker, postgres_db) • `media_net` (minio, backend, worker) • `observability_net`
+  |||
+}
+
+bar_resilience: {
+  width: 1020
+  height: 48
+  style: {
+    fill: "#EBF7EE"
+    stroke: "#43A047"
+    stroke-width: 1
+    border-radius: 8
+  }
+  label: |||md
+    **Resiliencia y Health Checks:** `restart: unless-stopped` en los 12 servicios • `depends_on: service_healthy` en cascada • Circuit Breaker con DLQ en workers • Readiness probes `/healthz`
+  |||
+}
+
+# Flujo vertical hacia las barras de resumen sin cruce de flechas
+services_grid -> bar_volumes: {
+  style: { stroke: "transparent" }
+}
+bar_volumes -> bar_secrets: {
+  style: { stroke: "transparent" }
+}
+bar_secrets -> bar_networks: {
+  style: { stroke: "transparent" }
+}
+bar_networks -> bar_resilience: {
+  style: { stroke: "transparent" }
+}
